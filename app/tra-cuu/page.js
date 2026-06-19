@@ -46,8 +46,9 @@ export default function TraCuuPage() {
     .select('*')
     .order('name')
     .range(0, 9999)
-  setProducts(data || [])
-  setLoading(false)
+  console.log('Tổng số sản phẩm load được:', data?.length)
+setProducts(data || [])
+setLoading(false)
 }
 
   const handleLogout = () => {
