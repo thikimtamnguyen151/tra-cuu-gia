@@ -3,25 +3,7 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { supabase } from '../../lib/supabase'
 
-const removeAccents = (str) => {
-  if (!str) return ''
-  return str
-    .replace(/[àáạảãâầấậẩẫăằắặẳẵ]/g, 'a')
-    .replace(/[ÀÁẠẢÃÂẦẤẬẨẪĂẰẮẶẲẴ]/g, 'a')
-    .replace(/[èéẹẻẽêềếệểễ]/g, 'e')
-    .replace(/[ÈÉẸẺẼÊỀẾỆỂỄ]/g, 'e')
-    .replace(/[ìíịỉĩ]/g, 'i')
-    .replace(/[ÌÍỊỈĨ]/g, 'i')
-    .replace(/[òóọỏõôồốộổỗơờớợởỡ]/g, 'o')
-    .replace(/[ÒÓỌỎÕÔỒỐỘỔỖƠỜỚỢỞỠ]/g, 'o')
-    .replace(/[ùúụủũưừứựửữ]/g, 'u')
-    .replace(/[ÙÚỤỦŨƯỪỨỰỬỮ]/g, 'u')
-    .replace(/[ỳýỵỷỹ]/g, 'y')
-    .replace(/[ỲÝỴỶỸ]/g, 'y')
-    .replace(/đ/g, 'd')
-    .replace(/Đ/g, 'D')
-    .toLowerCase()
-}
+const removeAccents = (str) => str.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/đ/g, 'd').replace(/Đ/g, 'D').toLowerCase()
 
 export default function TraCuuPage() {
   const [user, setUser] = useState(null)
