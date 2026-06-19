@@ -4,9 +4,20 @@ import { useRouter } from 'next/navigation'
 import { supabase } from '../../lib/supabase'
 
 const removeAccents = (str) => {
+  if (!str) return ''
   return str
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[àáạảãâầấậẩẫăằắặẳẵ]/g, 'a')
+    .replace(/[ÀÁẠẢÃÂẦẤẬẨẪĂẰẮẶẲẴ]/g, 'a')
+    .replace(/[èéẹẻẽêềếệểễ]/g, 'e')
+    .replace(/[ÈÉẸẺẼÊỀẾỆỂỄ]/g, 'e')
+    .replace(/[ìíịỉĩ]/g, 'i')
+    .replace(/[ÌÍỊỈĨ]/g, 'i')
+    .replace(/[òóọỏõôồốộổỗơờớợởỡ]/g, 'o')
+    .replace(/[ÒÓỌỎÕÔỒỐỘỔỖƠỜỚỢỞỠ]/g, 'o')
+    .replace(/[ùúụủũưừứựửữ]/g, 'u')
+    .replace(/[ÙÚỤỦŨƯỪỨỰỬỮ]/g, 'u')
+    .replace(/[ỳýỵỷỹ]/g, 'y')
+    .replace(/[ỲÝỴỶỸ]/g, 'y')
     .replace(/đ/g, 'd')
     .replace(/Đ/g, 'D')
     .toLowerCase()
@@ -30,13 +41,14 @@ export default function TraCuuPage() {
   }, [])
 
   const fetchProducts = async () => {
-    const { data } = await supabase
-      .from('products')
-      .select('*')
-      .order('name')
-    setProducts(data || [])
-    setLoading(false)
-  }
+  const { data } = await supabase
+    .from('products')
+    .select('*')
+    .order('name')
+    .range(0, 9999)
+  setProducts(data || [])
+  setLoading(false)
+}
 
   const handleLogout = () => {
     localStorage.removeItem('user')

@@ -23,10 +23,14 @@ export default function QuanLyPage() {
   }, [])
 
   const fetchProducts = async () => {
-    const { data } = await supabase.from('products').select('*').order('name')
-    setProducts(data || [])
-    setLoading(false)
-  }
+  const { data } = await supabase
+    .from('products')
+    .select('*')
+    .order('name')
+    .range(0, 9999)
+  setProducts(data || [])
+  setLoading(false)
+}
 
   const handleSave = async () => {
     if (!form.name.trim()) return alert('Vui lòng nhập tên hàng!')
