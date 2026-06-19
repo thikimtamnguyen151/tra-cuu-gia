@@ -8,6 +8,7 @@ export default function QuanLyPage() {
   const [products, setProducts] = useState([])
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
+  const [showRecent, setShowRecent] = useState(false)
   const [editing, setEditing] = useState(null)
   const [showForm, setShowForm] = useState(false)
   const [form, setForm] = useState({ name: '', unit: '', cost_price: '', sell_price: '', supplier: '' })
@@ -79,11 +80,18 @@ export default function QuanLyPage() {
   const removeAccents = (str) => str.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/đ/g, 'd').replace(/Đ/g, 'D').toLowerCase()
 
   const words = removeAccents(search).split(' ').filter(w => w !== '')
-  const filtered = products.filter(p => {
-    if (words.length === 0) return true
-    const target = removeAccents((p.name || '') + ' ' + (p.supplier || ''))
-    return words.every(word => target.includes(word))
-  })
+  const isRecent = (p) => {
+  if (!p.updated_at) return false
+  const diffDays = (new Date() - new Date(p.updated_at)) / (1000 * 60 * 60 * 24)
+  return diffDays <= 7
+}
+
+const filtered = products.filter(p => {
+  if (showRecent && !isRecent(p)) return false
+  if (words.length === 0) return true
+  const target = removeAccents((p.name || '') + ' ' + (p.supplier || ''))
+  return words.every(word => target.includes(word))
+})
 
   const formatPrice = (price) => {
     if (!price) return <span className="text-gray-400 italic">-</span>
@@ -154,16 +162,20 @@ export default function QuanLyPage() {
 
         {/* Thanh tìm kiếm + nút thêm */}
         <div className="flex gap-2 mb-4">
-          <input type="text" value={search} onChange={e => setSearch(e.target.value)}
-            placeholder="🔍 Tìm tên hàng hoặc nhà cung cấp..."
-            className="flex-1 border border-gray-300 rounded-xl px-4 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white shadow-sm" />
-          {!showForm && (
-            <button onClick={() => { setShowForm(true); setEditing(null); setForm({ name: '', unit: '', cost_price: '', sell_price: '', supplier: '' }) }}
-              className="bg-blue-600 text-white px-4 py-2 rounded-xl hover:bg-blue-700 font-medium whitespace-nowrap">
-              + Thêm
-            </button>
-          )}
-        </div>
+  <input type="text" value={search} onChange={e => setSearch(e.target.value)}
+    placeholder="🔍 Tìm tên hàng hoặc nhà cung cấp..."
+    className="flex-1 border border-gray-300 rounded-xl px-4 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white shadow-sm" />
+  <button onClick={() => setShowRecent(!showRecent)}
+    className={`px-4 py-2 rounded-xl font-medium whitespace-nowrap border ${showRecent ? 'bg-orange-500 text-white border-orange-500' : 'bg-white text-gray-700 border-gray-300'}`}>
+    🕐 Vừa sửa
+  </button>
+  {!showForm && (
+    <button onClick={() => { setShowForm(true); setEditing(null); setForm({ name: '', unit: '', cost_price: '', sell_price: '', supplier: '' }) }}
+      className="bg-blue-600 text-white px-4 py-2 rounded-xl hover:bg-blue-700 font-medium whitespace-nowrap">
+      + Thêm
+    </button>
+  )}
+</div>
 
         {/* Bảng sản phẩm */}
         {loading ? (
