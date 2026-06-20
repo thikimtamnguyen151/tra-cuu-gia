@@ -38,13 +38,18 @@ setLoading(false)
   }
 
   const formatPrice = (price, supplier) => {
-    if (!price) return (
-      <span className="text-gray-400 italic">
-        Liên hệ {supplier ? supplier : ''}
-      </span>
-    )
-    return new Intl.NumberFormat('vi-VN').format(price) + 'đ'
+  if (!price) {
+    if (user?.role === 'admin') {
+      return (
+        <span className="text-gray-400 italic">
+          Liên hệ {supplier ? supplier : ''}
+        </span>
+      )
+    }
+    return <span className="text-gray-400 italic">Liên hệ chủ cửa hàng</span>
   }
+  return new Intl.NumberFormat('vi-VN').format(price) + 'đ'
+}
 
   const words = removeAccents(search).split(' ').filter(w => w !== '')
   const filtered = products.filter(p => {
@@ -98,23 +103,25 @@ return (
           <div className="bg-white rounded-xl shadow-sm overflow-hidden">
             <table className="w-full text-sm">
               <thead className="bg-gray-50 text-gray-600">
-                <tr>
-                  <th className="text-left px-4 py-3">Tên hàng</th>
-                  <th className="text-left px-4 py-3">ĐVT</th>
-                  <th className="text-right px-4 py-3">Giá vốn</th>
-                  <th className="text-right px-4 py-3">Giá bán</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filtered.map((p, i) => (
-                  <tr key={p.id} className={i % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
-                    <td className="px-4 py-3 font-medium text-gray-800">{p.name}</td>
-                    <td className="px-4 py-3 text-gray-600">{p.unit || '-'}</td>
-                    <td className="px-4 py-3 text-right text-gray-700">{formatPrice(p.cost_price, p.supplier)}</td>
-                    <td className="px-4 py-3 text-right font-semibold text-blue-600">{formatPrice(p.sell_price, p.supplier)}</td>
-                  </tr>
-                ))}
-              </tbody>
+  <tr>
+    <th className="text-left px-4 py-3">Tên hàng</th>
+    <th className="text-left px-4 py-3">ĐVT</th>
+    {user?.role === 'admin' && <th className="text-right px-4 py-3">Giá vốn</th>}
+    <th className="text-right px-4 py-3">Giá bán</th>
+    {user?.role === 'admin' && <th className="text-left px-4 py-3">Nguồn</th>}
+  </tr>
+</thead>
+<tbody>
+  {filtered.map((p, i) => (
+    <tr key={p.id} className={i % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
+      <td className="px-4 py-3 font-medium text-gray-800">{p.name}</td>
+      <td className="px-4 py-3 text-gray-600">{p.unit || '-'}</td>
+      {user?.role === 'admin' && <td className="px-4 py-3 text-right text-gray-700">{formatPrice(p.cost_price, p.supplier)}</td>}
+      <td className="px-4 py-3 text-right font-semibold text-blue-600">{formatPrice(p.sell_price, p.supplier)}</td>
+      {user?.role === 'admin' && <td className="px-4 py-3 text-gray-600">{p.supplier || '-'}</td>}
+    </tr>
+  ))}
+</tbody>
             </table>
           </div>
         )}
