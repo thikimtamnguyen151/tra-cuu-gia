@@ -181,7 +181,7 @@ const filtered = products.filter(p => {
         {loading ? (
           <p className="text-center text-gray-500 py-10">Đang tải...</p>
         ) : (
-          <div className="bg-white rounded-xl shadow-sm overflow-hidden">
+          <div className="bg-white rounded-xl shadow-sm overflow-x-auto" style={{ WebkitOverflowScrolling: 'touch' }}>
             <table className="w-full text-sm">
               <thead className="bg-gray-50 text-gray-600">
                 <tr>
